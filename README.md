@@ -1,20 +1,19 @@
-# **EMPERORHUB**
+# EMPERORHUB V2
 
 This is a Python project I made while learning Python.
 
-**What it does**
+## What it does
 
 EmperorHub is a school or work hub that brings different tools, games, and features together in one application.
 
-**Features**
+## Features
 
 * Weather information using an API
-* Multiple games and testers
-* Built-in calculator
-* Dark mode
+* Multiple games and school/work utilities
+* Dark mode/Light mode
 * Separate Python files working together
 
-**What I learned**
+## What I learned
 
 * Working with APIs and JSON
 * Using CustomTkinter to build GUI applications
@@ -22,20 +21,16 @@ EmperorHub is a school or work hub that brings different tools, games, and featu
 * Using subprocess to launch other programs
 * Using file paths with os.path
 
-**How to run**
+## How to run
 
+1. ```pip install customtkinter``` and ```pip install playsound3``` and ```pip install requests``
+2. Put all of the project files in the same parent folder so the scripts path finding can work.
+3. Have a stable internet connection.
 Download the project files and run `main.py`.
 
-**Made with**
+## Made with
 
-Python.
+Python and many libraries.
 
-CustomTkinter.
-
-APIs.
-
-**Future improvements**
-
-* Add more school-related features
-* Add a settings system
-* Add more games and tools
+## Future improvements
+* New utilities and games coming soon!
