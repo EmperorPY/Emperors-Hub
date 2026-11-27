@@ -139,6 +139,8 @@ def change_mode():
 
 def search():
     city = city_get.get()
+    if not city:
+        return
     WEATHER_CODES = {
         0: "Clear sky",                                            # totally clear
         1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",      # cloud cover levels
@@ -212,7 +214,7 @@ def search():
        
 
 
-    except (KeyError, IndexError, requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+    except (KeyError, IndexError, requests.exceptions.RequestException):
         temp_label.configure(text="City not found or connection error",wraplength=200)
         wind_label.configure(text="-")
         humidity_label.configure(text="-")
