@@ -3,7 +3,7 @@ import requests
 import subprocess
 import sys
 import os
-
+import threading
 
 # ---------------- GAME LINKS ----------------
 
@@ -66,6 +66,7 @@ def calculator():
     )
     subprocess.Popen([sys.executable, calc_path])
 
+
 def flipit():
     games_path = os.path.abspath(
         os.path.join(
@@ -76,7 +77,8 @@ def flipit():
         )
     )
     subprocess.Popen([sys.executable, games_path])
-    
+
+
 def todo():
     games_path = os.path.abspath(
         os.path.join(
@@ -87,7 +89,8 @@ def todo():
         )
     )
     subprocess.Popen([sys.executable, games_path])
-    
+
+
 def study_timer():
     games_path = os.path.abspath(
         os.path.join(
@@ -99,7 +102,8 @@ def study_timer():
         )
     )
     subprocess.Popen([sys.executable, games_path])
-    
+
+
 # ---------------- API ----------------
 
 geo = "https://geocoding-api.open-meteo.com/v1/search"
@@ -141,20 +145,31 @@ def search():
     city = city_get.get()
     if not city:
         return
+
+    threading.Thread(
+        target=weather_search,
+        args=(city,),
+        daemon=True
+    ).start()
+
+
+def weather_search(city):
     WEATHER_CODES = {
-        0: "Clear sky",                                            # totally clear
-        1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",      # cloud cover levels
-        45: "Fog", 48: "Depositing rime fog",                      # foggy conditions
-        51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",  # drizzle levels
-        56: "Light freezing drizzle", 57: "Dense freezing drizzle",         # freezing drizzle
-        61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",           # rain levels
-        66: "Light freezing rain", 67: "Heavy freezing rain",               # freezing rain
-        71: "Slight snow fall", 73: "Moderate snow fall", 75: "Heavy snow fall",  # snow levels
-        77: "Snow grains",                                         # tiny snow grains
-        80: "Slight rain showers", 81: "Moderate rain showers", 82: "Violent rain showers",  # showers
-        85: "Slight snow showers", 86: "Heavy snow showers",       # snow showers
-        95: "Thunderstorm", 96: "Thunderstorm with slight hail", 99: "Thunderstorm with heavy hail",  # storms
+        0: "Clear sky",
+        1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+        45: "Fog", 48: "Depositing rime fog",
+        51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",
+        56: "Light freezing drizzle", 57: "Dense freezing drizzle",
+        61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+        66: "Light freezing rain", 67: "Heavy freezing rain",
+        71: "Slight snow fall", 73: "Moderate snow fall", 75: "Heavy snow fall",
+        77: "Snow grains",
+        80: "Slight rain showers", 81: "Moderate rain showers", 82: "Violent rain showers",
+        85: "Slight snow showers", 86: "Heavy snow showers",
+        95: "Thunderstorm", 96: "Thunderstorm with slight hail",
+        99: "Thunderstorm with heavy hail",
     }
+
     try:
         geo_params = {"name": city}
 
@@ -180,46 +195,45 @@ def search():
         )
 
         data = response.json()
-
         current_data = data["current"]
 
         temp = current_data["temperature_2m"]
         wind = current_data["wind_speed_10m"]
         code = current_data["weather_code"]
-
-        temp_label.configure(
-            text=f"Temperature: {temp}°C🌡️"
-        )
-
-        wind_label.configure(
-            text=f"Wind: {wind} km/h💨"
-        )
-        
         humidity = current_data["relative_humidity_2m"]
         apparent_temp = current_data["apparent_temperature"]
-        
-        humidity_label.configure(
+
+        main.after(0, lambda: temp_label.configure(
+            text=f"Temperature: {temp}°C🌡️"
+        ))
+
+        main.after(0, lambda: wind_label.configure(
+            text=f"Wind: {wind} km/h💨"
+        ))
+
+        main.after(0, lambda: humidity_label.configure(
             text=f"Humidity: {humidity}%💧"
-        )
-        
-        apparent_temp_label.configure(
+        ))
+
+        main.after(0, lambda: apparent_temp_label.configure(
             text=f"Feels like: {apparent_temp}°C🌡️"
-        )
-    
-        weather_code.configure(
-        text=f"Weather Type: {WEATHER_CODES.get(code, 'Unknown')}",
-        wraplength=200
-        )
+        ))
 
-       
-
+        main.after(0, lambda: weather_code.configure(
+            text=f"Weather Type: {WEATHER_CODES.get(code, 'Unknown')}",
+            wraplength=200
+        ))
 
     except (KeyError, IndexError, requests.exceptions.RequestException):
-        temp_label.configure(text="City not found or connection error",wraplength=200)
-        wind_label.configure(text="-")
-        humidity_label.configure(text="-")
-        apparent_temp_label.configure(text="-")
-        weather_code.configure(text="-")
+        main.after(0, lambda: temp_label.configure(
+            text="City not found or connection error",
+            wraplength=200
+        ))
+
+        main.after(0, lambda: wind_label.configure(text="-"))
+        main.after(0, lambda: humidity_label.configure(text="-"))
+        main.after(0, lambda: apparent_temp_label.configure(text="-"))
+        main.after(0, lambda: weather_code.configure(text="-"))
 
 
 # ---------------- HOME ----------------
@@ -254,7 +268,7 @@ weather_frame = ctk.CTkFrame(
 weather_frame.grid(row=0, column=0, rowspan=3, sticky="nsew")
 
 weather_frame.grid_columnconfigure(0, weight=1)
-weather_frame.grid_rowconfigure(9, weight=1)   
+weather_frame.grid_rowconfigure(9, weight=1)
 
 
 weather_title = ctk.CTkLabel(
@@ -538,6 +552,8 @@ temp_label2.grid(row=0, column=0, padx=20, pady=20)
 
 temp_label3 = ctk.CTkLabel(slot_6, text="New Utilities Coming soon!", font=("Arial", 20))
 temp_label3.grid(row=0, column=0, padx=20, pady=20)
+
+
 # ---------------- RUN ----------------
 
 main.mainloop()
