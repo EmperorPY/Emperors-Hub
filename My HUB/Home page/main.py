@@ -103,6 +103,18 @@ def study_timer():
     )
     subprocess.Popen([sys.executable, games_path])
 
+def flashcards():
+    games_path = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "Games",
+            "PythonBasicsFlashCards",
+            "PythonBasicsFlashCards.py"
+        )
+    )
+    subprocess.Popen([sys.executable, games_path])
+
 
 # ---------------- API ----------------
 
@@ -249,7 +261,7 @@ label.grid(row=0, column=1)
 
 explanation = ctk.CTkLabel(
     main,
-    text="Welcome to the Emperors Hub!\nNeed to play fun games or utilities but arent allowed phones or websites are banned in school or work?\nUse the Emperors Hub!",
+    text="Welcome to the Emperors Hub!\nNeed to play fun games or utilities but arent allowed phones, or websites are banned in school or work?\nUse the Emperors Hub!",
     font=("Arial", 20),
     wraplength=950
 )
@@ -288,6 +300,7 @@ city_get = ctk.CTkEntry(
 )
 
 city_get.grid(row=1, column=0, pady=10)
+city_get.bind("<Return>", lambda event: search())
 
 
 search_button = ctk.CTkButton(
@@ -544,14 +557,27 @@ study_timer_button = ctk.CTkButton(
 
 study_timer_button.grid(row=0, column=0, padx=20, pady=20)
 
-temp_label1 = ctk.CTkLabel(slot_4, text="New Utilities Coming soon!", font=("Arial", 20))
+flashcards_button = ctk.CTkButton(
+    slot_4,
+    text="Python Flashcards",
+    fg_color="white",
+    hover_color="lightgray",
+    text_color="black",
+    font=("Arial", 20),
+    width=300,
+    height=55,
+    command=flashcards
+)
+
+flashcards_button.grid(row=0, column=0, padx=20, pady=20)
+
+
+
+temp_label1 = ctk.CTkLabel(slot_5, text="New Utilities Coming soon!", font=("Arial", 20))
 temp_label1.grid(row=0, column=0, padx=20, pady=20)
 
-temp_label2 = ctk.CTkLabel(slot_5, text="New Utilities Coming soon!", font=("Arial", 20))
+temp_label2 = ctk.CTkLabel(slot_6, text="New Utilities Coming soon!", font=("Arial", 20))
 temp_label2.grid(row=0, column=0, padx=20, pady=20)
-
-temp_label3 = ctk.CTkLabel(slot_6, text="New Utilities Coming soon!", font=("Arial", 20))
-temp_label3.grid(row=0, column=0, padx=20, pady=20)
 
 
 # ---------------- RUN ----------------
